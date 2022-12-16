@@ -247,7 +247,7 @@ EOF
 option,delimiter,"\t"
 option,hasColumnNames,false
 
-fromFile,"/home/minseokjeon/research/GNN_Pointer_analysis/PointerAnalysis_GNN/PointerAnalyzer/doop/MyMethod.facts",m,meth
+fromFile,"$(pwd)/MyMethod.facts",m,meth
 toPredicate,MyMethod,meth
 EOF
                 $bloxbatch -db $database -import $(pwd)/tmp/MyMehtod.import
