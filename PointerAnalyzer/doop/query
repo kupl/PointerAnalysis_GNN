@@ -1,0 +1,13 @@
+bloxbatch -db last-analysis -query Stats:Simple:InsensVarPointsTo | sort > mtr
+
+
+bloxbatch -db last-analysis -query Stats:Simple:InsensCallGraphEdge | sort > tmp.facts
+
+
+bloxbatch -db last-analysis -query MethodSignatureRef | sort > sig.facts
+
+
+bloxbatch -db last-analysis -query TargetMethod | sort > targetFacts/tmp.facts
+
+
+bloxbatch -db last-analysis -query Stats:Simple:PotentiallyFailingCast | sort > targetFacts/tmp.facts

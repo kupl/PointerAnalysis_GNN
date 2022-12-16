@@ -1,0 +1,77 @@
+
+
+MyLearnInvocation(?invocation)<-//, I1(?invocation) <-
+  !Combined(?invocation),
+  LearnInvocation(?invocation),
+  MethodInvocationRef(?invocation).
+
+///*
+LearnInvocation(?invocation)<-
+  string:like(?method, "%java.util%Map%:%"),
+  Invocation:In[?invocation] = ?method.
+ 
+LearnInvocation(?invocation)<-
+  string:like(?method, "%java.util%Set%:%"),
+  Invocation:In[?invocation] = ?method.
+//*/
+
+
+
+Invocation:In[?invocation] = ?method<-
+  SpecialMethodInvocation:In(?invocation,?method).
+
+Invocation:In[?invocation] = ?method<-
+  VirtualMethodInvocation:In(?invocation,?method).
+
+Invocation:In[?invocation] = ?method<-
+  StaticMethodInvocation:In(?invocation,?method).
+
+
+
+
+C1(?invo),
+LearnInvocation(?invo)<-MethodInvocationRef(?invo), Feature0(?invo), Feature67(?invo), Feature69(?invo), Feature7(?invo), Feature8(?invo), Feature11(?invo), Feature12(?invo), Feature17(?invo), Feature18(?invo), Feature3(?invo), Feature21(?invo), Feature22(?invo), Feature25(?invo), Feature26(?invo), Feature29(?invo), Feature5(?invo), Feature35(?invo), Feature37(?invo), Feature38(?invo), Feature41(?invo), Feature43(?invo), Feature45(?invo), Feature49(?invo), Feature51(?invo), Feature52(?invo),  Feature63(?invo).
+
+C2(?invo),
+LearnInvocation(?invo)<-MethodInvocationRef(?invo), Feature0(?invo), Feature65(?invo), Feature67(?invo), Feature69(?invo), Feature11(?invo), Feature13(?invo), Feature14(?invo), Feature17(?invo), Feature22(?invo), Feature25(?invo), Feature26(?invo), Feature29(?invo), Feature5(?invo), Feature35(?invo), Feature37(?invo), Feature45(?invo), Feature47(?invo), Feature49(?invo), Feature51(?invo), Feature52(?invo),  Feature57(?invo),  Feature61(?invo), Feature63(?invo).
+
+C3(?invo),
+LearnInvocation(?invo)<-MethodInvocationRef(?invo), Feature0(?invo), Feature67(?invo), Feature69(?invo), Feature11(?invo), Feature21(?invo), Feature22(?invo), Feature25(?invo), Feature26(?invo), Feature29(?invo), Feature5(?invo), Feature35(?invo), Feature37(?invo), Feature38(?invo), Feature43(?invo), Feature45(?invo), Feature47(?invo), Feature49(?invo), Feature51(?invo), Feature53(?invo),  Feature57(?invo),  Feature61(?invo), Feature63(?invo).
+
+C4(?invo),
+LearnInvocation(?invo)<-MethodInvocationRef(?invo), Feature0(?invo), Feature67(?invo), Feature69(?invo), Feature7(?invo), Feature8(?invo), Feature11(?invo), Feature12(?invo), Feature14(?invo), Feature17(?invo), Feature21(?invo), Feature22(?invo), Feature25(?invo), Feature26(?invo), Feature29(?invo), Feature5(?invo), Feature35(?invo), Feature37(?invo), Feature41(?invo), Feature43(?invo), Feature45(?invo), Feature47(?invo), Feature49(?invo), Feature51(?invo), Feature53(?invo),  Feature56(?invo),  Feature61(?invo), Feature63(?invo).
+
+C5(?invo),
+LearnInvocation(?invo)<-MethodInvocationRef(?invo), Feature0(?invo), Feature2(?invo), Feature5(?invo), Feature7(?invo), Feature8(?invo), Feature11(?invo), Feature13(?invo), Feature14(?invo), Feature17(?invo), Feature19(?invo), Feature21(?invo), Feature22(?invo), Feature25(?invo), Feature26(?invo), Feature29(?invo),  Feature33(?invo), Feature35(?invo), Feature37(?invo), Feature39(?invo), Feature41(?invo), Feature42(?invo), Feature45(?invo), Feature46(?invo), Feature49(?invo), Feature51(?invo), Feature53(?invo),  Feature57(?invo),  Feature61(?invo), Feature63(?invo), Feature65(?invo), Feature67(?invo), Feature68(?invo).
+
+C6(?invo),
+LearnInvocation(?invo)<-MethodInvocationRef(?invo), Feature64(?invo), Feature0(?invo), Feature67(?invo), Feature69(?invo), Feature11(?invo), Feature17(?invo), Feature22(?invo), Feature25(?invo), Feature26(?invo), Feature29(?invo), Feature5(?invo), Feature35(?invo), Feature39(?invo), Feature45(?invo), Feature47(?invo), Feature49(?invo), Feature51(?invo),   Feature61(?invo), Feature63(?invo).
+
+C7(?invo),
+LearnInvocation(?invo)<-MethodInvocationRef(?invo), Feature0(?invo), Feature2(?invo), Feature5(?invo), Feature6(?invo), Feature9(?invo), Feature11(?invo), Feature13(?invo), Feature14(?invo), Feature17(?invo), Feature19(?invo), Feature21(?invo), Feature22(?invo), Feature25(?invo), Feature26(?invo), Feature29(?invo),  Feature32(?invo), Feature35(?invo), Feature36(?invo), Feature39(?invo), Feature41(?invo), Feature43(?invo), Feature45(?invo), Feature47(?invo), Feature49(?invo), Feature51(?invo), Feature53(?invo),  Feature57(?invo),  Feature61(?invo), Feature63(?invo), Feature65(?invo), Feature67(?invo), Feature69(?invo).
+
+C8(?invo),
+LearnInvocation(?invo)<-MethodInvocationRef(?invo), Feature0(?invo), Feature65(?invo), Feature67(?invo), Feature69(?invo), Feature11(?invo), Feature13(?invo), Feature14(?invo), Feature17(?invo), Feature19(?invo), Feature21(?invo), Feature22(?invo), Feature26(?invo), Feature29(?invo), Feature5(?invo), Feature33(?invo), Feature35(?invo), Feature37(?invo), Feature39(?invo), Feature41(?invo), Feature43(?invo), Feature45(?invo), Feature47(?invo), Feature49(?invo), Feature51(?invo), Feature53(?invo),  Feature57(?invo),  Feature61(?invo), Feature63(?invo).
+
+C9(?invo),
+LearnInvocation(?invo)<-MethodInvocationRef(?invo), Feature0(?invo), Feature3(?invo), Feature5(?invo), Feature6(?invo), Feature9(?invo), Feature11(?invo), Feature13(?invo), Feature14(?invo), Feature17(?invo), Feature19(?invo), Feature21(?invo), Feature22(?invo), Feature25(?invo), Feature26(?invo), Feature29(?invo),  Feature32(?invo), Feature35(?invo), Feature37(?invo), Feature38(?invo), Feature41(?invo), Feature43(?invo), Feature44(?invo), Feature46(?invo), Feature49(?invo), Feature51(?invo), Feature53(?invo),  Feature57(?invo),  Feature61(?invo), Feature63(?invo), Feature65(?invo), Feature67(?invo), Feature69(?invo).
+
+C10(?invo),
+LearnInvocation(?invo)<-MethodInvocationRef(?invo), Feature0(?invo), Feature67(?invo), Feature69(?invo), Feature11(?invo), Feature14(?invo), Feature17(?invo), Feature20(?invo), Feature22(?invo), Feature25(?invo), Feature26(?invo), Feature29(?invo), Feature5(?invo), Feature35(?invo), Feature41(?invo), Feature43(?invo), Feature45(?invo), Feature47(?invo), Feature49(?invo), Feature51(?invo),   Feature61(?invo), Feature63(?invo).
+LearnInvocation(?invo)<-MethodInvocationRef(?invo), Feature69(?invo), Feature11(?invo), Feature45(?invo), Feature46(?invo), Feature61(?invo), Feature49(?invo), Feature51(?invo), Feature22(?invo), Feature26(?invo),  Feature29(?invo), Feature63(?invo).
+
+
+
+MyApplicationMethod(?meth) <-
+  ApplicationClass(?type),
+  DeclaringClassMethod[?meth] = ?type.
+
+
+ClassCnt[?type] = ?n<-
+  agg<<?n = count()>> MethodSignature:Type[_] = ?type.
+
+
+
+
+
+

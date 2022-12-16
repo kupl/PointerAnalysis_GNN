@@ -1,0 +1,45 @@
+
+CtxMethod(?meth)<-
+  MyMethod(?meth, "2-type"),
+  MethodSignatureRef(?meth).
+
+
+CtxMethod(?meth)<-
+  MyMethod(?meth, "3-objedt"),
+  MethodSignatureRef(?meth).
+
+
+CtxMethod(?meth)<-
+  MyMethod(?meth, "2-objedt"),
+  MethodSignatureRef(?meth).
+
+
+CtxMethod(?meth)<-
+  MyMethod(?meth, "1-type"),
+  MethodSignatureRef(?meth).
+
+CtxMethod(?meth)<-
+  MethodSignatureRef(?meth).
+
+//CtxMethod(?meth)<-
+//  D1(?meth).
+//CtxMethod(?meth)<-
+//  D2(?meth).
+
+
+D2(?meth)<-MethodSignatureRef(?meth),MFeature14(?meth),MFeature0(?meth),MFeature11(?meth),MFeature34(?meth),MFeature19(?meth),MFeature30(?meth),MFeature22(?meth),MFeature17(?meth),MFeature5(?meth).
+
+//D1(?meth)<-MethodSignatureRef(?meth),MFeature17(?meth),MFeature30(?meth),MFeature19(?meth),MFeature34(?meth),MFeature11(?meth),MFeature5(?meth),MFeature15(?meth),MFeature0(?meth),MFeature13(?meth).
+
+//D1(?meth)<-MethodSignatureRef(?meth),MFeature10(?meth),MFeature17(?meth),MFeature27(?meth),MFeature19(?meth),MFeature30(?meth),MFeature15(?meth),MFeature33(?meth),MFeature29(?meth),MFeature13(?meth),MFeature5(?meth),MFeature0(?meth),MFeature7(?meth).
+
+//D1(?meth)<-MethodSignatureRef(?meth),MFeature21(?meth),MFeature23(?meth),MFeature17(?meth),MFeature27(?meth),MFeature25(?meth),MFeature5(?meth),MFeature19(?meth),MFeature30(?meth),MFeature15(?meth),MFeature0(?meth),MFeature2(?meth),MFeature33(?meth),MFeature29(?meth),MFeature13(?meth),MFeature9(?meth).
+
+
+
+
+
+D1(?meth) <- MFeature2(?meth),MFeature7(?meth),MethodSignatureRef(?meth).
+D1(?meth) <- MFeature13(?meth),MFeature11(?meth),MethodSignatureRef(?meth).
+D1(?meth) <- MFeature27(?meth),MFeature8(?meth),MethodSignatureRef(?meth).
+D1(?meth) <- MFeature14(?meth),MFeature11(?meth),MFeature31(?meth),MFeature18(?meth),MFeature16(?meth),MFeature35(?meth),MFeature23(?meth),MethodSignatureRef(?meth).

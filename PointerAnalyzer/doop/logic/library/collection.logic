@@ -1,0 +1,42 @@
+CollectionMethod(?method) ->
+  MethodSignatureRef(?method).
+
+CollectionClass(?class) ->
+  Type(?class).
+
+// TODO: optimize this rule.
+InnerClass(?class, ?inner) <-
+  Type:Value(?class:?className),
+  Type:Value(?inner:?innerName),
+  string:substring[?innerName, 0, _] = ?className + "$".
+
+InnerClassCount[?class] = ?n <-
+  agg<<?n = count()>>InnerClass(?class, _).
+
+// Exclude some application collections for optimization.
+ExcludeCollectionClass(?class) <-
+  ApplicationClass(?class),
+  InnerClassCount[?class] > 10.
+
+// All classes that inherit basic collection interfaces
+// or abstract classes are considered collection classes.
+CollectionClass(?class) <-
+  (Type:Value(?collection:"java.util.Collection");
+   Type:Value(?collection:"java.util.Dictionary");
+   Type:Value(?collection:"java.util.Map")),
+  AssignCompatible(?collection, ?class),
+  !ExcludeCollectionClass(?class).
+
+// Arrays and Collections contain many collection-manipulating methods.
+CollectionClass(?arrays) <-
+  Type:Value(?arrays:"java.util.Arrays");
+  Type:Value(?arrays:"java.util.Collections").
+
+// Inner classes or collection classes are also considered.
+CollectionClass(?inner) <-
+  CollectionClass(?collection),
+  InnerClass(?collection, ?inner).
+
+CollectionMethod(?method) <-
+  CollectionClass(?class),
+  MethodSignature:Type[?method] = ?class.

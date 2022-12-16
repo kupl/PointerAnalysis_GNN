@@ -1,0 +1,31 @@
+
+
+
+
+
+MFeature0(?meth)<-string:like(?meth,"%java%"),MethodSignatureRef(?meth).
+MFeature1(?meth)<-string:like(?meth,"%lang%"),MethodSignatureRef(?meth).
+MFeature2(?meth)<-string:like(?meth,"%sun%"),MethodSignatureRef(?meth).
+MFeature3(?meth)<-string:like(?meth,"%()%"),MethodSignatureRef(?meth).
+MFeature4(?meth)<-string:like(?meth,"%void%"),MethodSignatureRef(?meth).
+MFeature5(?meth)<-string:like(?meth,"%security%"),MethodSignatureRef(?meth).
+MFeature6(?meth)<-string:like(?meth,"%int%"),MethodSignatureRef(?meth).
+MFeature7(?meth)<-string:like(?meth,"%util%"),MethodSignatureRef(?meth).
+MFeature8(?meth)<-string:like(?meth,"%String%"),MethodSignatureRef(?meth).
+MFeature9(?meth)<-string:like(?meth,"%javax%"),MethodSignatureRef(?meth).
+MFeature10(?meth)<-string:like(?meth,"%java.lang.AbstractStringBuilder:%"),MethodSignatureRef(?meth).
+MFeature11(?meth)<-string:like(?meth,"%java.lang.StringBuilder:%"),MethodSignatureRef(?meth).
+MFeature12(?meth)<-string:like(?meth,"%java.lang.String:%"),MethodSignatureRef(?meth).
+MFeature13(?meth)<-string:like(?meth,"%java.lang.Throwable:%"),MethodSignatureRef(?meth).
+MFeature14(?meth)<-string:like(?meth,"%java.lang.Object:%"),MethodSignatureRef(?meth).
+MFeature15(?meth)<-string:like(?meth,"% <init>(%"),MethodSignatureRef(?meth).
+MFeature16(?meth)<-string:like(?meth,"% append(%"),MethodSignatureRef(?meth).
+MFeature17(?meth)<-string:like(?meth,"% match(%"),MethodSignatureRef(?meth).
+MFeature18(?meth)<-string:like(?meth,"% expandCapacity(%"),MethodSignatureRef(?meth).
+MFeature19(?meth)<-string:like(?meth,"% toString(%"),MethodSignatureRef(?meth).
+
+
+
+
+
+

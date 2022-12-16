@@ -1,0 +1,26 @@
+
+
+
+CtxMethod(?meth)<-
+  //string:notlike(?meth,"%match%"),
+  //string:like(?meth,"%<init>%"),
+  //string:notlike(?meth,"%Throwable%:%"),
+  //string:notlike(?meth,"%append%"),
+  //string:notlike(?meth,"%match%"),
+  //string:notlike(?meth,"%expandCapacity%"),
+  //string:notlike(?meth,"%toString%"),
+  //string:notlike(?meth,"%fillInStackTrace%"),
+  //string:notlike(?meth,"%StringBuffer%:%"),
+  //MFeature0(?meth),
+  //MFeature19(?meth),
+  //MFeature14(?meth),
+  MethodSignatureRef(?meth).
+
+/*
+CtxMethod(?meth)<-
+  MFeature4(?meth),
+  //MFeature17(?meth),
+  MethodSignatureRef(?meth).
+*/
+
+

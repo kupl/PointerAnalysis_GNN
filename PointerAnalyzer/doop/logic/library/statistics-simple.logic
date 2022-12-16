@@ -1,0 +1,599 @@
+/***************************************************
+ * Variables
+ ***************************************************/
+
+Stats:Simple:InsensVarPointsTo(?heap, ?var) ->
+  HeapAllocationRef(?heap), VarRef(?var).
+Stats:Simple:InsensVarPointsTo(?heap, ?var) <-
+  VarPointsTo(_, ?heap, _, ?var).
+#ifdef TRANSFORM_INPUT
+// Example of post-processing of set-based transform results for client analyses
+// that need it.
+Stats:Simple:InsensVarPointsTo(?heap, ?var) <-
+  VarPointsTo(_, ?heap, _, ?var2), DupCopies(?var, ?var2).
+#endif
+
+Stats:Simple:InsensReachableVar(?var) -> VarRef(?var).
+Stats:Simple:ReachableVar(?ctx, ?var) -> Context(?ctx), VarRef(?var).
+
+Stats:Simple:InsensReachableVar(?var),
+Stats:Simple:ReachableVar(?ctx, ?var) <-
+  ReachableContext(?ctx, ?method), Var:DeclaringMethod(?var, ?method).
+
+/***************************************************
+ * Arrays
+ ***************************************************/
+
+Stats:Simple:InsensArrayIndexPointsTo(?heap, ?baseheap) ->
+  HeapAllocationRef(?heap), HeapAllocationRef(?baseheap).
+Stats:Simple:InsensArrayIndexPointsTo(?heap, ?baseheap) <-
+  ArrayIndexPointsTo(_, ?heap, _, ?baseheap).
+
+/***************************************************
+ * Fields
+ ***************************************************/
+
+Stats:Simple:InsensInstanceFieldPointsTo(?heap, ?sig, ?baseheap) ->
+  HeapAllocationRef(?heap), FieldSignatureRef(?sig), HeapAllocationRef(?baseheap).
+Stats:Simple:InsensInstanceFieldPointsTo(?heap, ?sig, ?baseheap) <-
+  InstanceFieldPointsTo(_, ?heap, ?sig, _, ?baseheap).
+
+Stats:Simple:InsensStaticFieldPointsTo(?heap, ?sig) ->
+  HeapAllocationRef(?heap), FieldSignatureRef(?sig).
+Stats:Simple:InsensStaticFieldPointsTo(?heap, ?sig) <-
+  StaticFieldPointsTo(_, ?heap, ?sig).
+
+/***************************************************
+ * Call graph edges
+ ***************************************************/
+
+Stats:Simple:InsensCallGraphEdge(?from, ?to) ->
+  CallGraphEdgeSourceRef(?from), MethodSignatureRef(?to).
+Stats:Simple:InsensCallGraphEdge(?from, ?to) <-
+  CallGraphEdge(_, ?from, _, ?to).
+
+/*
+Stats:Simple:InsensNativeCallGraphEdge(?from, ?to) ->
+  MethodSignatureRef(?from), MethodSignatureRef(?to).
+Stats:Simple:InsensNativeCallGraphEdge(?from, ?to) <-
+  NativeCallGraphEdge(_, ?from, _, ?to).
+*/
+
+Stats:Simple:VirtualCallGraphEdge(?from, ?to) -> MethodInvocationRef(?from),  MethodSignatureRef(?to).
+Stats:Simple:VirtualCallGraphEdge(?from, ?to) <-
+	Stats:Simple:ReachableVirtualMethodInvocation(?from),
+	Stats:Simple:InsensCallGraphEdge(?from, ?to).
+
+Stats:Simple:InsensReflectiveCallGraphEdge(?from, ?to) ->
+  CallGraphEdgeSourceRef(?from), MethodSignatureRef(?to).
+Stats:Simple:InsensReflectiveCallGraphEdge(?from, ?to) <-
+	ReflectiveCallGraphEdge(_, ?from, _, ?to).
+
+Stats:Simple:WholeInsensCallGraphEdge(?from, ?to) ->
+  CallGraphEdgeSourceRef(?from), MethodSignatureRef(?to).
+
+Stats:Simple:WholeInsensCallGraphEdge(?from, ?to) <-
+  Stats:Simple:InsensCallGraphEdge(?from, ?to).
+Stats:Simple:WholeInsensCallGraphEdge(?from, ?to) <-
+  Stats:Simple:InsensReflectiveCallGraphEdge(?from, ?to).
+
+/***************************************************
+ * Application methods
+ ***************************************************/
+
+Stats:Simple:ApplicationMethod(?method) -> MethodSignatureRef(?method).
+Stats:Simple:ApplicationMethod(?method) <-
+	ApplicationClass(?class),
+	DeclaringClassMethod[?method] = ?class.
+
+/*
+Stats:Simple:ApplicationMethodNotAbstract(?method) -> MethodSignatureRef(?method).
+Stats:Simple:ApplicationMethodNotAbstract(?method) <-
+	Stats:Simple:ApplicationMethod(?method),
+	! MethodModifier(?abstract, ?method),
+	ModifierRef:Value(?abstract:"abstract").
+*/
+
+Stats:Simple:InsensReachableApplicationMethod(?method) -> MethodSignatureRef(?method).
+Stats:Simple:ReachableApplicationMethod(?ctx, ?method) -> Context(?ctx), MethodSignatureRef(?method).
+
+Stats:Simple:InsensReachableApplicationMethod(?method),
+Stats:Simple:ReachableApplicationMethod(?ctx, ?method) <-
+	ReachableContext(?ctx, ?method),
+	Stats:Simple:ApplicationMethod(?method).
+
+/*
+Stats:Simple:NotReachableApplicationMethodNotAbstract(?method) -> MethodSignatureRef(?method).
+Stats:Simple:NotReachableApplicationMethodNotAbstract(?method) <-
+	Stats:Simple:ApplicationMethodNotAbstract(?method),
+	! Stats:Simple:InsensReachableApplicationMethod(?method).
+*/
+
+/***************************************************
+ * Virtual method invocations
+ ***************************************************/
+
+Stats:Simple:VirtualTargets[?from] = ?size -> MethodInvocationRef(?from), int[64](?size).
+Stats:Simple:VirtualTargets[?from] = size <-
+	agg<<size = count()>>(Stats:Simple:VirtualCallGraphEdge(?from, _)).
+
+/*
+Stats:Simple:Application:VirtualTargets[?from] = ?size -> MethodInvocationRef(?from), int[64](?size).
+Stats:Simple:Application:VirtualTargets[?from] = ?size <-
+	Stats:Simple:VirtualTargets[?from] = ?size,
+	Stats:Simple:Application:ReachableVirtualMethodInvocation(?from).
+*/
+
+Stats:Simple:PolymorphicCallSite(?from) -> MethodInvocationRef(?from).
+Stats:Simple:PolymorphicCallSite(?from) <-
+	Stats:Simple:VirtualTargets[?from] = ?size, ?size > 1.
+
+Stats:Simple:Application:PolymorphicCallSite(?from) -> MethodInvocationRef(?from).
+Stats:Simple:Application:PolymorphicCallSite(?from) <-
+	Stats:Simple:PolymorphicCallSite(?from),
+	Stats:Simple:Application:ReachableVirtualMethodInvocation(?from).
+
+Stats:Simple:ReachableVirtualMethodInvocation(?invocation) -> MethodInvocationRef(?invocation).
+Stats:Simple:ReachableVirtualMethodInvocation(?invocation) <-
+	Reachable(?method),
+	VirtualMethodInvocation:In(?invocation, ?method).
+
+Stats:Simple:Application:ReachableVirtualMethodInvocation(?invocation) -> MethodInvocationRef(?invocation).
+Stats:Simple:Application:ReachableVirtualMethodInvocation(?invocation) <-
+	Stats:Simple:InsensReachableApplicationMethod(?method),
+	VirtualMethodInvocation:In(?invocation, ?method).
+
+Stats:Simple:Application:VirtualMethodInvocation(?invocation) -> MethodInvocationRef(?invocation).
+Stats:Simple:Application:VirtualMethodInvocation(?invocation) <-
+	Stats:Simple:ApplicationMethod(?method),
+	VirtualMethodInvocation:In(?invocation, ?method).
+
+Stats:Simple:NullVirtualMethodInvocation(?invocation) -> MethodInvocationRef(?invocation).
+Stats:Simple:NullVirtualMethodInvocation(?invocation) <-
+	Stats:Simple:ReachableVirtualMethodInvocation(?invocation),
+	VirtualMethodInvocation:Base[?invocation] = ?base,
+	!(Stats:Simple:InsensVarPointsTo(_, ?base)).
+
+Stats:Simple:Application:NullVirtualMethodInvocation(?invocation) -> MethodInvocationRef(?invocation).
+Stats:Simple:Application:NullVirtualMethodInvocation(?invocation) <-
+	Stats:Simple:Application:ReachableVirtualMethodInvocation(?invocation),
+	VirtualMethodInvocation:Base[?invocation] = ?base,
+	!(Stats:Simple:InsensVarPointsTo(_, ?base)).
+
+/***************************************************
+ * Casts
+ ***************************************************/
+
+Stats:Simple:Application:Cast(?type, ?from, ?to, ?inmethod) <-
+	AssignCast(?type, ?from, ?to, ?inmethod), Stats:Simple:ApplicationMethod(?inmethod).
+
+Stats:Simple:PotentiallyFailingCast(?type, ?from, ?to) -> Type(?type), VarRef(?to), VarRef(?from).
+Stats:Simple:PotentiallyFailingCast(?type, ?from, ?to) <-
+	Stats:Simple:ReachableCast(_, ?type, ?to, ?from),
+	Stats:Simple:InsensVarPointsTo(?heap, ?from),
+	HeapAllocation:Type[?heap] = ?heaptype,
+	! AssignCompatible(?type, ?heaptype).
+
+Stats:Simple:Application:PotentiallyFailingCast(?type, ?from, ?to) -> Type(?type), VarRef(?to), VarRef(?from).
+Stats:Simple:Application:PotentiallyFailingCast(?type, ?from, ?to) <-
+	Stats:Simple:Application:ReachableCast(_, ?type, ?to, ?from),
+	Stats:Simple:InsensVarPointsTo(?heap, ?from),
+	HeapAllocation:Type[?heap] = ?heaptype,
+	! AssignCompatible(?type, ?heaptype).
+
+// TODO introduce an ID for casts.
+Stats:Simple:ReachableCast(?inmethod, ?type, ?to, ?from) -> 
+	Type(?type), VarRef(?to), VarRef(?from), MethodSignatureRef(?inmethod).
+Stats:Simple:ReachableCast(?inmethod, ?type, ?to, ?from) <-
+	Reachable(?inmethod), AssignCast(?type, ?from, ?to, ?inmethod).
+
+Stats:Simple:Application:ReachableCast(?inmethod, ?type, ?to, ?from) -> 
+	Type(?type), VarRef(?to), VarRef(?from), MethodSignatureRef(?inmethod).
+Stats:Simple:Application:ReachableCast(?inmethod, ?type, ?to, ?from) <-
+	Stats:Simple:ApplicationMethod(?inmethod),
+	Stats:Simple:ReachableCast(?inmethod, ?type, ?to, ?from).
+
+
+
+/*
+HctxHeap(?hctx, ?heap),
+CtxVar(?ctx,?var)<-
+  VarPointsTo(?hctx, ?heap, ?ctx, ?var).
+
+MyCtxCnt[?rctx] = ?n<-
+  RealContextFromContext[?ctx] = ?rctx,
+  CtxCnt[?ctx] = ?n.
+
+//MyHCtxCnt[?rctx] = ?n<-
+//  RealHContextFromHContext[?ctx] = ?rctx,
+//  HCtxCnt[?ctx] = ?n.
+
+
+
+HCtxCnt[?ctx] = ?n <-
+  agg<<?n = count()>> HctxHeap(?ctx,_).
+
+
+CtxCnt[?ctx] = ?n <-
+  agg<<?n = count()>> CtxVar(?ctx,_).
+
+MethodCtxCnt[?name] = ?n <-
+  agg<<?n = count()>> MethodCtx(?name, _, _).
+
+ClassCtxCnt[?class] = ?n <-
+  agg<<?n = count()>> MethodClassCtx(?class, _, _).
+*/
+
+/*
+MethodClassCtx(?class, ?to, ?ctx),
+MethodCtx(?name, ?to, ?ctx)<-
+  MethodSignature:SimpleName[?to]= ?name,
+  MethodSignature:Type[?to] = ?class,
+  CallGraphEdge(_, _, ?ctx, ?to).
+*/
+
+
+
+
+//MyMethodCtxCnt[?rctx] = ?n<-
+//  RealContextFromContext[?ctx] = ?rctx,
+//  MethodCtxCnt[?ctx] = ?n.
+
+
+/*
+
+
+ReachableInvo(?from) <-
+  Stats:Simple:InsensCallGraphEdge(?from, _).
+
+
+
+MyThisVar(?var) <-
+  ThisVar[_] = ?var.
+
+
+MyThisVar(?to) <-
+  MyThisVar(?from),
+  AssignLocal(?from, ?to, _).
+
+
+I4(?invo) <- 
+  FieldTheInvo(?invo).
+
+//I4(?invo) <- 
+//  InitInInit(?invo).
+
+
+I5(?invo)<-
+  ReachableInvo(?invo),
+  !ActualParam[2, ?invo] = _,
+  ActualParam[1, ?invo] = ?base1,
+  ActualParam[0, ?invo] = ?base,
+  StaticMethodInvocation:In(?invo,?inmeth),
+  AssignHeapAllocation(_, ?base1, ?inmeth),
+  AssignHeapAllocation(_, ?base, ?inmeth).
+
+
+I5(?invo)<-
+  ReachableInvo(?invo),
+  !ActualParam[1, ?invo] = _,
+  ActualParam[0, ?invo] = ?base,
+  StaticMethodInvocation:In(?invo,?inmeth),
+  AssignHeapAllocation(_, ?base, ?inmeth).
+
+
+
+
+
+I5(?invo)<-
+  ReachableInvo(?invo),
+  !ActualParam[1, ?invo] = _,
+  ActualParam[0, ?invo] = ?var,
+  VirtualMethodInvocation:Base[?invo] = ?base,
+  VirtualMethodInvocation:In(?invo, ?inmeth),
+  AssignHeapAllocation(_, ?var, ?inmeth),
+  AssignHeapAllocation(_, ?base, ?inmeth).
+
+
+I5(?invo)<-
+  ReachableInvo(?invo),
+  !ActualParam[0, ?invo] = _,
+  VirtualMethodInvocation:Base[?invo] = ?base,
+  VirtualMethodInvocation:In(?invo, ?inmeth),
+  AssignHeapAllocation(_, ?base, ?inmeth).
+
+
+I5(?invo) <-
+  string:like(?meth,"%javax.swing%:%"),
+  Invocation:In[?invo] = ?meth.
+*/
+
+
+/*
+InitInInit(?invo)<-
+  RealInitMeth(?inmeth),
+  SingleMethodInvocations(?invo),
+  //!ActualParam[_,?invo] = _,
+  string:like(?tometh,"%<init>%"),
+  string:like(?inmeth,"%<init>%"),
+  MyThisVar(?this), 
+  StoreInstanceField(?base, ?this, _, ?inmeth),
+  SpecialMethodInvocation:Signature[?invo] = ?tometh,
+  //Stats:Simple:InsensCallGraphEdge(?invo, ?tometh),
+  //AssignHeapAllocation(_, ?base, ?inmeth),
+  SpecialMethodInvocation:Base[?invo] = ?base,
+  SpecialMethodInvocation:In(?invo,?inmeth).
+
+
+  
+RealInitMeth(?inmeth)<-
+  SpecialMethodInvocation:In(?invo, ?inmeth),
+  //Invocation:In[?invo] = ?inmeth,
+  AbstractClassMeth(?tometh),
+  //SpecialMethocInvocation(?invo,_ ,?tometh,_).
+  SpecialMethodInvocation:Signature[?invo] = ?tometh.
+  //Stats:Simple:InsensCallGraphEdge(?invo, ?tometh).
+*/
+
+/*
+HeapMethCnt[?inmeth] = ?n <-
+  agg<<?n = count()>> AssignHeapAllocation(_, _, ?inmeth).
+
+
+FieldTheInvo(?invo)<-
+  ReachableInvo(?invo),
+  FormalVar(?var),
+  ActualParam[0,?invo] = ?var,
+  SingleParamInvo(?invo),
+  LoadInstanceField(?this, _, ?base, _),
+  MyThisVar(?this),
+  SingleMethodInvocations(?invo),
+  VirtualMethodInvocation:Base[?invo] = ?base.
+
+FieldTheInvo(?invo)<-
+  ReachableInvo(?invo),
+  FormalVar(?var),
+  ActualParam[0,?invo] = ?var,
+  SingleParamInvo(?invo),
+  LoadInstanceField(?this, _, ?base, _),
+  MyThisVar(?this),
+  SingleMethodInvocations(?invo),
+  SpecialMethodInvocation:Base[?invo] = ?base.
+*/
+
+/*
+SingleMethodInvocations(?invo) <-
+  MethToMeth(?fromMeth,?toMeth,?invo),
+  ?n = 1,
+  MethToMethInvoCnt[?fromMeth,?toMeth] = ?n.
+
+
+  
+MethToMethInvoCnt[?fromMeth, ?toMeth] = ?n <-
+  agg<<?n = count()>> MethToMeth(?fromMeth, ?toMeth, _). 
+*/
+
+//Stats:Simple:InsensCallGraphEdge(?invo, ?toMeth),
+/*
+MethToMeth(?fromMeth,?toMeth,?invo) <-
+  SpecialMethodInvocation:Signature[?invo] = ?toMeth,
+  //CandidateInvocation(?invo),
+  Invocation:In[?invo] = ?fromMeth.
+
+MethToMeth(?fromMeth,?toMeth,?invo) <-
+  StaticMethodInvocation:Signature[?invo] = ?toMeth,
+  //CandidateInvocation(?invo),
+  Invocation:In[?invo] = ?fromMeth.
+
+MethToMeth(?fromMeth,?toMeth,?invo) <-
+  VirtualMethodInvocation:Signature[?invo] = ?toMeth,
+  //CandidateInvocation(?invo),
+  Invocation:In[?invo] = ?fromMeth.
+
+
+
+InvoGenCtx2(?from, ?tomethod, ?toCtx) <-
+  CallGraphEdge(_, ?from, ?toCtx , ?tomethod).
+
+InvoCtxCnt2[?from, ?method] = ?n <-
+  agg<<?n = count()>> InvoGenCtx2(?from, ?method, _).
+
+
+
+TwoInvo(?invocation), newTwoInvo(?invocation, ?meth) <-
+  InvoCtxCnt2[?invocation,?meth] > 1,
+  //InvoCtxCnt2[?invocation,?meth] > 1,
+  MethodSignatureRef(?meth),
+  MethodInvocationRef(?invocation).
+
+
+
+ForSInvo(?from,?meth,?fromCtx),
+MinseokVV(?from, ?fromCtx, ?toCtx, ?meth) <-
+  TwoInvo(?from),
+  CallGraphEdge(?fromCtx, ?from, ?toCtx, ?meth).
+
+
+
+SInvoCnt[?from,?meth] = ?n<-
+  agg<<?n = count()>> ForSInvo(?from,?meth,_).
+
+SInvo(?from) <-
+  SInvoCnt[?from,_] > 1.
+
+TargetInvocations(?from) <-
+  ?fromCtx1 != ?fromCtx2,
+  MinseokVV(?from, ?fromCtx1, ?toCtx, ?meth),
+  MinseokVV(?from, ?fromCtx2, ?toCtx, ?meth).
+
+
+SameCtx(?from) <-
+  TwoInvo(?from),
+  CallGraphEdge(?ctx, ?from, ?ctx, _).
+
+
+FormalVar(?var)<-
+  ThisVar[_] = ?var.
+
+
+FormalVar(?var) <-
+  FormalParam[_,_] = ?var.
+
+
+FormalVar(?to) <-
+  !StoreInstanceField(_, ?to,_,_),
+  !StoreArrayIndex(_, ?to, _),
+  AssignLocal(?from,?to,_),
+  FormalVar(?from).
+
+
+FormalVar(?to)<-
+  !StoreInstanceField(_, ?to,_,_),
+  !StoreArrayIndex(_, ?to, _),
+  AssignCast(_, ?from, ?to, _),
+  FormalVar(?from).
+
+
+
+SingleParamInvo(?invo) <-
+  MethodInvocationRef(?invo),
+  ActualParam[0, ?invo] = _,
+  !ActualParam[1, ?invo] = _.
+
+
+
+TheInvo(?invocation), FormalInvo(?invocation)<-
+  //TwoInvo(?invocation),
+  //SingleParamInvo(?invocation),
+  ActualParam[0,?invocation] = ?formal,
+  FormalVar(?formal),
+  ReachableInvo(?invocation),
+  StaticMethodInvocation:Signature[?invocation] = _.
+
+
+////////////////////////////////////////////////////////////////////////
+
+TheInvo(?invo), TheVirtual(?invo) <-
+  //TwoInvo(?invo),
+  ActualParam[0,?invo] = ?var,
+  //SingleParamInvo(?invo),
+  FormalVar(?var),
+  FormalVar(?base),
+  VirtualMethodInvocation:Base[?invo] = ?base.
+
+
+TheInvo(?invo), TheSpecial(?invo) <-
+  //TwoInvo(?invo),
+  ActualParam[0,?invo] = ?var,
+  //SingleParamInvo(?invo),
+  FormalVar(?var),
+  FormalVar(?base),
+  SpecialMethodInvocation:Base[?invo] = ?base.
+
+
+
+TheInvo(?invo) <-
+  //TwoInvo(?invo),
+  !ActualParam[_,?invo] = _,
+  FormalVar(?base),
+  ReachableInvo(?invo),
+  VirtualMethodInvocation:Base[?invo] = ?base.
+
+
+TheInvo(?invo) <-
+  //TwoInvo(?invo),
+  !ActualParam[_,?invo] = _,
+  FormalVar(?base),
+  ReachableInvo(?invo),
+  SpecialMethodInvocation:Base[?invo] = ?base.
+
+
+
+
+MySameCtx(?invo) <-
+  SInvo(?invo),
+  !TargetInvocations(?invo),
+  TwoInvo(?invo).
+
+
+////////////////////////////////// CandidateInvocation ///////////////////////////////////
+
+
+CandidateInvocation(?invo) <-
+  TheInvo(?invo).
+
+
+CandidateInvocation(?invo) <-
+  MySameCtx(?invo).
+
+
+CandidateInvocation(?invo) <-
+  SameCtx(?invo).
+
+*/
+/*
+AbstractClassMeth(?meth) <-
+  string:like(?mod,"abstract"),
+  ClassModifier(?mod, ?class),
+  MethodDeclaringClass[?meth] = ?class.
+*/
+/*
+TunnelingInvo(?invo) <-
+  ReachableInvo(?invo),
+  !I5(?invo),
+  CandidateInvocation(?invo).
+
+
+TunnelingInvo(?invo) <-
+  ReachableInvo(?invo),
+  !I5(?invo),
+  I4(?invo).
+
+
+*/
+
+
+#ifdef Insens
+Invocation:In[?invocation] = ?inmethod <-
+  SpecialMethodInvocation:In(?invocation, ?inmethod).
+
+Invocation:In[?invocation] = ?inmethod <-
+  VirtualMethodInvocation:In(?invocation, ?inmethod).
+
+Invocation:In[?invocation] = ?inmethod <-
+  StaticMethodInvocation:In(?invocation, ?inmethod).
+
+Node(?from),
+Node(?to),
+Edge(?from, ?invo, ?to)<-
+  Invocation:In[?invo] = ?from,
+  CallGraphEdge(_, ?invo, _, ?to).
+
+
+///* 
+RMFeature0(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature0(?meth).
+RMFeature1(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature1(?meth).
+RMFeature2(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature2(?meth).
+RMFeature3(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature3(?meth).
+RMFeature4(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature4(?meth).
+RMFeature5(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature5(?meth).
+RMFeature6(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature6(?meth).
+RMFeature7(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature7(?meth).
+RMFeature8(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature8(?meth).
+RMFeature9(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature9(?meth).
+RMFeature10(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature10(?meth).
+RMFeature11(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature11(?meth).
+RMFeature12(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature12(?meth).
+RMFeature13(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature13(?meth).
+RMFeature14(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature14(?meth).
+RMFeature15(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature15(?meth).
+RMFeature16(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature16(?meth).
+RMFeature17(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature17(?meth).
+RMFeature18(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature18(?meth).
+RMFeature19(?meth) <- Stats:Simple:InsensCallGraphEdge(_, ?meth),  MFeature19(?meth).
+//*/
+#endif
+
+
+
+

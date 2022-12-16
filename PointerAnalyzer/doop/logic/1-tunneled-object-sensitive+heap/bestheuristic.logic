@@ -1,0 +1,190 @@
+D2(?meth)->MethodSignatureRef(?meth).
+
+NormalHeapMethod[?heap] = ?inmethod -> HeapAllocationRef(?heap),MethodSignatureRef(?inmethod). 
+
+NormalHeapMethod[?heap] = ?inmethod,Normal(?heap)<-
+  AssignNormalHeapAllocation(?heap, _, ?inmethod).
+
+VeryImportantMethod(?method)->MethodSignatureRef(?method).
+
+MethodsCounts[?method]=?n<-
+  agg<<?n = count()>> AssignHeapAllocation(_, _, ?method).
+
+
+
+
+
+
+ManyMethodClass(?class)<-
+  ClassMethodCounts[?class] = ?cnt,
+  ?cnt > 20.
+
+Feature45(?meth)<-
+  ManyMethodClass(?class),
+  MethodDeclaringClass[?meth] = ?class,
+  MethodSignatureRef(?meth).
+
+
+/*
+
+Feature45(?meth)<-
+  FinalClass(?class),
+  MethodDeclaringClass[?meth] = ?class,
+  MethodSignatureRef(?meth).
+
+Feature46(?meth)<-
+  string:like(?meth,"%$%:%"),
+  Feature45(?meth),
+  MethodSignatureRef(?meth).
+
+*/
+
+ManyHeapMethods(?method1), Target(?method2)<- 
+  MethodSignature:Type[?method1] = ?type,
+  MethodSignature:Type[?method2] = ?type,
+  MethodsCounts[?method2] = ?n,
+  string:like(?method2,"%clinit%"),
+  ?n > 5.
+
+
+
+
+
+
+OneHeapMethods(?method)<-
+  MethodsCounts[?method] = ?n,
+  ?n=1.
+
+/*
+
+VeryImportantMethod(?method)<-
+  string:like(?method,"%<clinit>%"), //40
+  string:like(?method,"%()%"), //40
+  string:like(?method,"%void%"), //40
+  string:like(?method,"%d%"), //40
+  string:like(?method,"%void%"), //40
+
+  MethodSignatureRef(?method).
+
+*/
+
+
+
+
+
+
+
+
+VeryImportantMethod(?method)<-
+  string:like(?method,"%(%Object%)%"), //40
+  Var:DeclaringMethod(_, ?method), //28
+  string:notlike(?method,"%()%"),//7
+  string:like(?method,"%java%"),//0
+//  string:notlike(?method,"%Cache%"), //45
+//  string:notlike(?method,"%javax%"), //37
+  string:notlike(?method,"%init%"), //19
+  !StoreInstanceField(_, _, _, ?method),//31
+  string:like(?method,"%lang%"),//2
+  string:notlike(?method,"%security%"),  //11
+  string:notlike(?method,"%String%"), //17
+  AssignLocal(_, _, ?method),  //26
+  string:notlike(?method,"%$%:%"), //21
+  AssignHeapAllocation(_,_,?method), //42
+
+  !ManyHeapMethods(?method),
+
+  MethodSignatureRef(?method).
+
+
+
+
+
+
+
+VeryImportantMethod(?method)<-
+  string:like(?method,"%init%"), //18
+  string:like(?method,"%void%"), //8
+//  string:notlike(?method,"%Cache%"), //45
+  Var:DeclaringMethod(_, ?method), //28
+  !LoadArrayIndex(_,_,?method),//25
+  string:notlike(?method,"%(%Object%)%"), //41
+//  string:notlike(?method,"%javax%"), //37
+  AssignLocal(_, _, ?method),  //26
+  !StaticMethodInvocation(_, _, ?method),//33
+  !VirtualMethodInvocation(_,_,?method),//35
+  string:notlike(?method,"%String%"), //17
+  string:notlike(?method,"%lang%"), //3 new
+  string:notlike(?method,"%security%"),  //11
+  string:notlike(?method,"%int%"),  //13 new
+  string:notlike(?method,"%(%,%)%"),  //23 new
+  string:notlike(?method,"%sun%"),  //5
+  string:like(?method,"%java%"),            //0
+  string:like(?method,"%()%"), //6
+  string:notlike(?method,"%$%:%"), //21
+  string:like(?method,"%util%"),            //14
+
+  !ManyHeapMethods(?method),
+
+  MethodSignatureRef(?method).
+
+
+
+
+
+
+
+VeryImportantMethod(?method)<-
+  StoreInstanceField(_, _, _, ?method), //30
+  Var:DeclaringMethod(_, ?method), //28
+  AssignLocal(_, _, ?method), //26
+//  string:notlike(?method,"%Cache%"), //45
+//  string:notlike(?method,"%javax%"), //37
+  string:notlike(?method,"%(%Object%)%"), //41
+  !LoadArrayIndex(_,_,?method),//25
+  string:like(?method,"%void%"),  //8
+  string:notlike(?method,"%()%"), //7
+  !StaticMethodInvocation(_, _, ?method), //33
+  string:like(?method,"%init%"),  //18
+  string:notlike(?method,"%String%"), //17
+  string:notlike(?method,"%lang%"), //3
+  !VirtualMethodInvocation(_,_,?method),//35
+  string:notlike(?method,"%security%"), //11
+  string:notlike(?method,"%sun%"), //5
+  string:like(?method,"%java%"), //0
+  string:like(?method,"%util%"), //14
+  string:like(?method,"%(%,%)%"), //22
+  string:like(?method,"%int%"), //12
+
+  !ManyHeapMethods(?method),
+
+  MethodSignatureRef(?method).
+
+
+
+D2(?meth)<-
+
+  string:like(?meth,"%java%"), //0
+  string:notlike(?meth,"%sun%"), //5
+
+
+  !Feature45(?meth),
+ 
+  string:notlike(?meth,"%Cache%"),//45
+
+
+  string:notlike(?meth,"%security%"), //11
+  string:notlike(?meth,"%String%"), //17
+  string:like(?meth,"%$%:%"), //20
+//  string:notlike(?meth,"%javax%"), //37
+  Var:DeclaringMethod(_, ?meth),  //28
+//  AssignLocal(_, _, ?meth),  //26
+
+
+
+  MethodSignatureRef(?meth).
+
+
+
+
+
+

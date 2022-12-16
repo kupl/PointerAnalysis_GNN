@@ -1,0 +1,66 @@
+D2(?meth)<-
+  MethodSignatureRef(?meth),
+  Feature30(?meth),
+  Feature39(?meth),
+  Feature17(?meth),
+  Feature5(?meth),
+  Feature0(?meth),
+  Feature11(?meth),
+  Feature34(?meth),
+  Feature36(?meth),
+  Feature22(?meth).
+
+D1(?meth)<-MethodSignatureRef(?meth),Feature25(?meth).
+
+D1(?meth)<-MethodSignatureRef(?meth),Feature27(?meth).
+D1(?meth)<-MethodSignatureRef(?meth),Feature21(?meth).
+D1(?meth)<-MethodSignatureRef(?meth),Feature23(?meth).
+D1(?meth)<-MethodSignatureRef(?meth),Feature8(?meth).
+D1(?meth)<-MethodSignatureRef(?meth),Feature18(?meth).
+D1(?meth)<-MethodSignatureRef(?meth),Feature30(?meth).
+D1(?meth)<-MethodSignatureRef(?meth),Feature17(?meth),Feature36(?meth).
+D1(?meth)<-
+  MethodSignatureRef(?meth),Feature2(?meth),Feature0(?meth),Feature36(?meth),Feature13(?meth),Feature31(?meth),Feature33(?meth).
+
+/*
+D2(?meth)<-
+  MethodSignatureRef(?meth),
+  Feature17(?meth),
+  Feature11(?meth),
+//  Feature34(?meth),
+//  Feature36(?meth),
+  Feature5(?meth),
+  Feature22(?meth).
+  
+D1(?meth)<-
+  MethodSignatureRef(?meth).
+  Feature32(?meth),
+  Feature0(?meth),
+  Feature11(?meth),
+  Feature34(?meth),
+  Feature36(?meth),
+  Feature22(?meth),
+  Feature7(?meth),
+  Feature20(?meth).
+
+D1(?meth)<-
+  MethodSignatureRef(?meth),
+  Feature21(?meth),
+  Feature23(?meth),
+  Feature27(?meth),
+  Feature25(?meth),
+  Feature2(?meth),
+  Feature17(?meth),
+  Feature39(?meth),
+  Feature15(?meth),
+  Feature5(?meth),
+  Feature0(?meth),
+  Feature33(?meth),
+  Feature31(?meth),
+  Feature36(?meth),
+  Feature29(?meth),
+  Feature13(?meth),
+  Feature9(?meth),
+  Feature19(?meth).
+*/
+

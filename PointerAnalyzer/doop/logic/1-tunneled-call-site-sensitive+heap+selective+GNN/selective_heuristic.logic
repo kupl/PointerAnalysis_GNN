@@ -1,0 +1,15 @@
+
+
+
+CtxMethod(?meth)<-
+  MyMethod(?meth),
+  MethodSignatureRef(?meth).
+
+/*
+CtxMethod(?meth)<-
+  MFeature4(?meth),
+  //MFeature17(?meth),
+  MethodSignatureRef(?meth).
+*/
+
+

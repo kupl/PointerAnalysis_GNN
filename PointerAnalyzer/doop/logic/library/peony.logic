@@ -1,0 +1,63 @@
+// Interprocedural assignments
+InterproceduralAssignTo(?to) <-
+  FormalParam[_, _] = ?to;
+  AssignReturnValue[_] = ?to.
+
+PreciseInterproceduralAssign(?to, ?obj) <-
+  InterproceduralAssignTo(?to),
+  PreciseVarPointsTo(?obj, ?to).
+
+// Load instance fields
+LoadInstanceFieldTo(?to) <-
+  LoadInstanceField(_, _, ?to, _).
+
+PreciseInstanceLoad(?to, ?obj) <-
+  LoadInstanceFieldTo(?to),
+  PreciseVarPointsTo(?obj, ?to).
+
+// Load static fields
+LoadStaticFieldTo(?to) <-
+  LoadStaticField(_, ?to, _).
+
+PreciseStaticLoad(?to, ?obj) <-
+  LoadStaticFieldTo(?to),
+  PreciseVarPointsTo(?obj, ?to).
+
+// Load array indexes
+LoadArrayIndexTo(?to) <-
+  LoadArrayIndex(_, ?to, _).
+
+PreciseArrayLoad(?to, ?obj) <-
+  LoadArrayIndexTo(?to),
+  PreciseVarPointsTo(?obj, ?to).
+
+// Local assignments
+AssignLocalTo(?to) <-
+  AssignLocal(_, ?to, _).
+
+PreciseAssignLocal(?to, ?obj) <-
+  AssignLocalTo(?to),
+  PreciseVarPointsTo(?obj, ?to).
+
+// Typable assignments
+AssignTo(?to) <-
+  AssignCast(_, _, ?to, _);
+  ReflectiveAssignReturnValue[_] = ?to.
+
+PreciseAssign(?to, ?obj) <-
+  AssignTo(?to),
+  PreciseVarPointsTo(?obj, ?to).
+
+// Catches
+CatchExceptionTo(?to) <-
+  ExceptionHandler:FormalParam[_] = ?to.
+
+PreciseCatch(?to, ?type) <-
+  CatchExceptionTo(?to),
+  PreciseVarPointsTo(?obj, ?to),
+  HeapAllocation:Type[?obj] = ?type.
+
+#ifdef ENABLE_PEONY_ROUND1
+ContextSensitiveMethod(?method) <-
+  CollectionMethod(?method).
+#endif // ENABLE_PEONY_ROUND1

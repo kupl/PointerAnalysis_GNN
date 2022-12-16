@@ -1,0 +1,95 @@
+/**
+ * Context-sensitive pointer analysis with context of 1 type and a
+ * context-sensitive heap abstraction.
+ *
+ * @author Martin Bravenboer
+ * @author George Kastrinis
+ */
+
+#include "macros.logic"
+#include "../context-sensitive.logic"
+#include "../library.logic"
+#include "../object-to-type.logic"
+
+// In this analysis, both the real context and the real heap context 
+// are Types. Keeping mapping 
+// functions is the way to handle analyses where HContext = Context 
+// (since the language considers them different types).
+// The type is not always a class type, because of arrays currently being
+// a non-class subtype of Object
+ContextFromRealContext[?type] = ?ctx ->
+  Context(?ctx), Type(?type).
+lang:skolem(`ContextFromRealContext).
+RealContextFromContext[?ctx] = ?type -> 
+  Context(?ctx), Type(?type).
+
+RealContextFromContext[?ctx] = ?type <-
+  ContextFromRealContext[?type] = ?ctx.
+
+// Creating special immutable type constant
+ImmutableTypeValue[] = ?immType <-
+  Type:Value(?immType:"<<immutable>>").
+
+// This analysis has no context for heap objects.
+// This is emulated by creating a single HContext object,
+// which is used everywhere.
+HContextFromRealHContext[] = ?hctx -> HContext(?hctx).
+lang:skolem(`HContextFromRealHContext).
+
+
+// Create initial objects with their heapcontexts.
+HContextFromRealHContext[] = ?hctx,
+HContext(?hctx),
+SystemThreadGroup(?hctx, ?alloc) <-
+  MySystemThreadGroup(?alloc).
+
+HContextFromRealHContext[] = ?hctx,
+HContext(?hctx),
+MainThreadGroup(?hctx, ?alloc) <-
+  MyMainThreadGroup(?alloc).
+
+HContextFromRealHContext[] = ?hctx,
+HContext(?hctx),
+MainThread(?hctx, ?alloc) <-
+  MyMainThread(?alloc).
+
+/**
+ * Merge optimization hack
+ */
+
+// For this analysis, we only need one of the parameters that may 
+// influence the new context object.
+MyMergeBasis(?heap) <-
+  MergeBasis(_, _, _, ?heap).
+
+// We create new context objects sparingly, because of the high cost.
+// We also cache them, so they can be looked up without a join.
+Context(?calleeCtx),
+ContextFromRealContext[DeclaringClassAllocation[?heap]] = ?calleeCtx,
+OptimizeMerge[?heap] = ?calleeCtx <-
+  MyMergeBasis(?heap).
+
+/**
+ * Reachable
+ */
+ReachableContext(?ctx, ?method),
+ContextFromRealContext[?type] = ?ctx,
+Context(?ctx)
+ <-
+  MainMethodDeclaration(?method),
+  Type:Value(?type:"<<initial-context>>").
+
+ReachableContext(?ctx, ?method),
+ContextFromRealContext[?type] = ?ctx,
+Context(?ctx)
+ <-
+  ImplicitReachable(?method),
+  Type:Value(?type:"<<jvm-startup>>").
+
+ReachableContext(?ctx, ?clinit),
+ContextFromRealContext[?type] = ?ctx,
+Context(?ctx)
+ <-
+  InitializedClass(?class),
+  ClassInitializer[?class] = ?clinit,
+  Type:Value(?type:"<<class-initialization>>").
