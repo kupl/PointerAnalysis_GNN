@@ -110,7 +110,7 @@ def clean():
         os.system('rm -rf %s/*' % path)
     
     # remove cache
-    remove(os.path.join(DOOP_HOME, 'cache'))
+    remove(os.path.join(DOOP_HOME, 'cache/analysis'))
     remove(os.path.join(PTATOOLKIT_HOME, 'cache'))
     # remove analysis results
     for d in ['tmp', 'results']:
