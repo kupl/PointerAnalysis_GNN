@@ -29,6 +29,7 @@ function printQuotient()
 	printf "${C_YELLOW}%-45s${C_RESET}${C_GREEN}%'.1f${C_RESET}\n" "$1" $(awk "BEGIN {print $2 / $3}")
 }
 
+print2 "PtsTo Size" $(size VarPointsTo)
 print2 "VarPts (var points-to)" $(size Stats:Simple:InsensVarPointsTo)
 #print3 "reachable variables" $(size Stats:Simple:InsensReachableVar) $(size Stats:Simple:ReachableVar)
 printQuotient "AvgPts (avg. objects per variable)" $(size Stats:Simple:InsensVarPointsTo) $(size Stats:Simple:InsensReachableVar)
