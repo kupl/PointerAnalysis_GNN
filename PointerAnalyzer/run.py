@@ -79,7 +79,8 @@ def runTable2(app):
 
 TABLE1 = [
     'hsqldb', 'galleon', 'jedit', 'soot', 'gruntspud', 'heritrix',
-    'pmd', 'jython', 'jasperreports', 'eclipse', 'briss', 'columba','luindex'
+    'pmd', 'jython', 'jasperreports', 'eclipse', 'briss', 'columba','luindex',
+    'lusearch','antlr','pmdm','eclipsem','fop','xalan','hsqldb'
 ]
 def runAll():
     for app in TABLE1:

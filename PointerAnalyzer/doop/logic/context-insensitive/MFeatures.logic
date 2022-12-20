@@ -2,7 +2,6 @@
 
 
 
-
 MFeature0(?meth)<-string:like(?meth,"%java%"),MethodSignatureRef(?meth).
 MFeature1(?meth)<-string:like(?meth,"%lang%"),MethodSignatureRef(?meth).
 MFeature2(?meth)<-string:like(?meth,"%sun%"),MethodSignatureRef(?meth).
@@ -27,5 +26,41 @@ MFeature19(?meth)<-string:like(?meth,"% toString(%"),MethodSignatureRef(?meth).
 
 
 
+Invocation:In[?invocation] = ?inmethod <-
+  SpecialMethodInvocation:In(?invocation, ?inmethod).
 
+Invocation:In[?invocation] = ?inmethod <-
+  VirtualMethodInvocation:In(?invocation, ?inmethod).
+
+Invocation:In[?invocation] = ?inmethod <-
+  StaticMethodInvocation:In(?invocation, ?inmethod).
+
+Node(?from),
+Node(?to),
+Edge(?from, ?invo, ?to)<-
+  Invocation:In[?invo] = ?from,
+  CallGraphEdge(_, ?invo, _, ?to).
+
+
+///*
+RMFeature0(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature0(?meth).
+RMFeature1(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature1(?meth).
+RMFeature2(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature2(?meth).
+RMFeature3(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature3(?meth).
+RMFeature4(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature4(?meth).
+RMFeature5(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature5(?meth).
+RMFeature6(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature6(?meth).
+RMFeature7(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature7(?meth).
+RMFeature8(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature8(?meth).
+RMFeature9(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature9(?meth).
+RMFeature10(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature10(?meth).
+RMFeature11(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature11(?meth).
+RMFeature12(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature12(?meth).
+RMFeature13(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature13(?meth).
+RMFeature14(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature14(?meth).
+RMFeature15(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature15(?meth).
+RMFeature16(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature16(?meth).
+RMFeature17(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature17(?meth).
+RMFeature18(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature18(?meth).
+RMFeature19(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature19(?meth).
 
