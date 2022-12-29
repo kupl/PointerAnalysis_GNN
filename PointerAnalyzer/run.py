@@ -124,7 +124,7 @@ def extract_graph(pgm):
     if not os.path.exists(path):
       cmd = "mkdir {}".format(pgm)
       os.system(cmd)
-    cmd = "bloxbatch -db doop/last-analysis -query Node | sort > {}/Nodes.facts".format(pgm) 
+    cmd = "bloxbatch -db doop/last-analysis -query Reachable | sort > {}/Nodes.facts".format(pgm) 
     os.system(cmd)
     cmd = "bloxbatch -db doop/last-analysis -query Edge | sort > {}/Edges.facts".format(pgm) 
     os.system(cmd)
