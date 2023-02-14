@@ -1,9 +1,21 @@
 
 
+CtxMethod(?meth)->
+  MethodSignatureRef(?meth).
 
-CtxMethod(?meth)<-
+PCMethod(?meth)->
+  MethodSignatureRef(?meth).
+
+PCMethod(?meth)<-
   MyMethod(?meth),
   MethodSignatureRef(?meth).
+
+
+/*
+CtxMethod(?meth)<-
+  //MyMethod(?meth),
+  MethodSignatureRef(?meth).
+*/
 
 /*
 CtxMethod(?meth)<-
