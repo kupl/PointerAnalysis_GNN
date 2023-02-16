@@ -13,7 +13,8 @@ python run_new.py GNN <pgm>
 ```
 where <pgm> is a target program to be analyzed (e.g., 'luindex').
 ```
-antlr, eclipsem, chart, fop, xalan, bloat, lusearch, hsqldb, jython, luindex, batik, checkstyle, sunflow, findbugs, jpc,luindex, antlr, pmd, xalan09,
+antlr, eclipsem, chart, fop, xalan, bloat, lusearch, hsqldb, jython, luindex, 
+batik, checkstyle, sunflow, findbugs, jpc,luindex, antlr, pmd, xalan09,
 eclipse, chart, fop, xalan, bloat, jedit, briss, lusearch, hsqldb, jython
 ```
 For example, the following command will analyze the program 'luindex':
