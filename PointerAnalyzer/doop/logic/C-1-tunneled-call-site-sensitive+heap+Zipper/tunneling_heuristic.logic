@@ -5,7 +5,7 @@ MyLearnInvocation(?invocation)<-//, I1(?invocation) <-
   LearnInvocation(?invocation),
   MethodInvocationRef(?invocation).
 
-/*
+///*
 LearnInvocation(?invocation)<-
   string:like(?method, "%java.util%Map%:%"),
   Invocation:In[?invocation] = ?method.
@@ -13,7 +13,7 @@ LearnInvocation(?invocation)<-
 LearnInvocation(?invocation)<-
   string:like(?method, "%java.util%Set%:%"),
   Invocation:In[?invocation] = ?method.
-*/
+//*/
 
 
 PCMethod(?meth) -> MethodSignatureRef(?meth).
