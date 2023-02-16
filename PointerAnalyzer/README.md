@@ -4,14 +4,14 @@
 
 ## Running porinter analysis with your node classification result
 
-(1) Save your classification result in classification.fact file
+(1) Save your classification result in 'classification.fact' file
 
 (2) Type the following command:
 
 ```sh
 python run_new.py GNN <pgm>
 ```
-where <pgm> is a target program to be analyzed (e.g., luindex).
+where <pgm> is a target program to be analyzed (e.g., 'luindex').
 
 
 ## Running baseline analysis 
