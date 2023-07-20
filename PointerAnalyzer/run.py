@@ -131,6 +131,8 @@ def extract_graph(pgm):
     for i in range(FEATURELEN):
       cmd = "bloxbatch -db doop/last-analysis -query RMFeature{} | sort > {}/MFeature{}.facts".format(i,pgm,i) 
       os.system(cmd)
+    cmd = "bloxbatch -db doop/last-analysis -query Additional | sort > {}/Additional.facts".format(pgm) 
+    os.system(cmd)
 
 def input_classification():
     my_list = []

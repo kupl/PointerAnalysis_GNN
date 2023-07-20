@@ -41,6 +41,12 @@ Edge(?from, ?invo, ?to)<-
   Invocation:In[?invo] = ?from,
   CallGraphEdge(_, ?invo, _, ?to).
 
+  
+Additional(?meth)<-
+  string:like(?meth,"%java.util%:%"),
+  MethodSignatureRef(?meth).
+
+
 
 ///*
 RMFeature0(?meth) <- CallGraphEdge(_,_,_,?meth),  MFeature0(?meth).
